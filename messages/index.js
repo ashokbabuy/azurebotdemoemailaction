@@ -8,6 +8,10 @@ http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 
+
+var emailSender = require('./emailSender.js');
+
+
 var useEmulator = (process.env.NODE_ENV == 'development');
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
@@ -29,14 +33,19 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
-/*
-.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-*/
+
+.matches('SendEmail', '/sendEmail')
+.matches(/\b(hi|hello|hey|howdy)\b/i, '/sayHi')
+
 .onDefault((session) => {
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
 
-bot.dialog('/', intents);    
+bot.dialog('/sayHi', function(session) {
+    session.send('Hi there!  Try saying things like "Get news in Toyko"');
+    session.endDialog();
+});
+
 
 if (useEmulator) {
     var restify = require('restify');
@@ -49,3 +58,23 @@ if (useEmulator) {
     module.exports = { default: connector.listen() }
 }
 
+bot.dialog('/sendEmail', [
+    function(session){
+        session.send("I can send an email to your team member on Earth, what's his/her address?");
+        builder.Prompts.text(session, "Enter an image url to get the caption for it: ");
+    },
+    function(session, results)
+    {
+        var emailAddress = results.response;
+        emailSender.sendEmail(emailAddress, function(err){
+            if(!err)
+            {
+                session.send("I've successfully sent an email to your team.");
+            }
+            else
+            {
+                session.send("Error sending email");
+            }
+        })
+    }
+]);
