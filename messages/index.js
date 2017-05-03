@@ -38,7 +38,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
 .matches('send email', '/sendEmail')
 .matches(/\b(hi|hello|hey|howdy)\b/i, '/sayHi')
-
+.matches('search file', '/searchFile')
 .onDefault((session) => {
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
@@ -49,6 +49,10 @@ bot.dialog('/sayHi', function(session) {
     session.endDialog();
 });
 
+bot.dialog('/searchFile', function(session) {
+    session.send('Hi there!  I can search for a file too. What is the file name"');
+    session.endDialog();
+});
 
 if (useEmulator) {
     var restify = require('restify');
