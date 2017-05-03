@@ -36,7 +36,7 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
-.matches('SendEmail', '/sendEmail')
+.matches('send email', '/sendEmail')
 .matches(/\b(hi|hello|hey|howdy)\b/i, '/sayHi')
 
 .onDefault((session) => {
