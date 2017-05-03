@@ -41,6 +41,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
 
+bot.dialog('/', intents); 
 bot.dialog('/sayHi', function(session) {
     session.send('Hi there!  Try saying things like "Get news in Toyko"');
     session.endDialog();
